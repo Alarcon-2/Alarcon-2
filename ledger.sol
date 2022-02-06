@@ -10,18 +10,25 @@ contract Bank{
 
     dataBase[] public dbArray;
 
-    mapping (address => uint) public ledger;
+    mapping (address => uint) ledger;
 
     function depositMoney() public payable{
         address _just= msg.sender;
         uint depositAmount = msg.value;
         dbArray.push(dataBase(depositAmount, _just));
-        ledger[_just] = depositAmount;
+        ledger[_just] = ledger[_just] + depositAmount;
     }
 
     function sendMoney(address payable sendAddress) public payable{
         require (msg.value <= ledger[msg.sender]);
         sendAddress.transfer(msg.value);
+        ledger[msg.sender] = ledger[msg.sender] - msg.value;
+        ledger[sendAddress] = ledger[sendAddress] + msg.value;
+        
+    }
+
+    function checkBalance() public view returns(uint){
+        return ledger[msg.sender];
     }
 
 
